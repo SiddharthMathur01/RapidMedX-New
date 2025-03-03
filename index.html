@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="loginstyle.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDcmwaDdofMGdvooyWPot0ohqdyJ4-J3w",
+            authDomain: "rapidmedx-dashboard.firebaseapp.com",
+            projectId: "rapidmedx-dashboard",
+            storageBucket: "rapidmedx-dashboard.appspot.com",
+            messagingSenderId: "660430771575",
+            appId: "1:660430771575:web:e6789c940b1833b42d7d72",
+            measurementId: "G-PBJKJHD2ND"
+        };
+
+        // Initialize Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase initialized successfully.");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            alert("Error initializing Firebase. Check console.");
+        }
+
+        const auth = firebase.auth();
+    </script>
+
+    <style>
+        /* Full-page red background */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: rgb(219, 174, 174);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Centered login box */
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            text-align: center;
+        }
+
+        /* Logo Styling */
+        .logo {
+            width: 200px;
+            margin-bottom: 10px;
+        }
+
+        /* Form input fields */
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Login button */
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkred;
+        }
+
+        /* Options links */
+        .options {
+            margin-top: 10px;
+        }
+
+        .options a {
+            color: red;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+
+        .options a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <img src="rapidmedxlogo.png" alt="Company Logo" class="logo">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" id="loginButton">Login</button>
+        </form>
+
+        <div class="options">
+            <a href="#" id="forgotPassword">Forgot Password?</a>
+            <a href="signup.html">Sign Up</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginButton = document.getElementById('loginButton');
+
+            loginButton.disabled = true; // Disable button to prevent multiple submissions
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    console.log("Login successful. Redirecting...");
+                    window.location.href = "one_tap_booking.html"; // Redirect after login
+                })
+                .catch((error) => {
+                    loginButton.disabled = false; // Re-enable button if login fails
+                    let errorMessage = "Invalid credentials. Please try again.";
+
+                    if (error.code === "auth/user-not-found") {
+                        errorMessage = "No account found with this email.";
+                    } else if (error.code === "auth/wrong-password") {
+                        errorMessage = "Incorrect password. Try again.";
+                    } else if (error.code === "auth/too-many-requests") {
+                        errorMessage = "Too many failed attempts. Try later.";
+                    }
+
+                    alert(errorMessage);
+                });
+        });
+
+        // Password reset function
+        document.getElementById("forgotPassword").addEventListener("click", function () {
+            const email = prompt("Enter your email to reset password:");
+            if (email) {
+                auth.sendPasswordResetEmail(email)
+                    .then(() => alert("Password reset link sent. Check your email."))
+                    .catch(error => alert("Error: " + error.message));
+            }
+        });
+    </script>
+</body>
+</html>
